@@ -55,9 +55,69 @@ drwxrwsr-x 3 student root
 -rw-rw-r-- 1 student root    0 окт 30 13:18 234
 drwxrwsr-x 2 student root 4096 окт 30 13:18 f123
 
+GUID-бит применяется и для файлов, и для папок.
+
+Sticky bit - устанавливается только на папки и определяет особые правила удаления объектов внутри папки.
+Для папок с установленным Sticky bit запрещается операция удаления файлов даже для тех пользователей, кто имеет права на запись. Владельцы объектов и пользователи, входящие в группу владельцев папки имеет возможность удалить свои объекты без ограничений.
+
+Устанавливается Sticky bit при помощи команды chmod:
+
+sudo chmod o+t <имя папки>
+sudo 1775 <имя папки>
+
+Права доступа до установки спецбита:
+student@alexander-VirtualBox:~$ stat 58008/
+  Файл: 58008/
+  Размер: 4096	Блоков: 8          Блок В/В: 4096   каталог
+Устройство: 803h/2051d	Инода: 938801      Ссылки: 2
+Доступ: (1777/drwxrwxrwt)  Uid: ( 1001/ student)   Gid: ( 1001/ student)
+
+Пример установки бита:
+student@alexander-VirtualBox:~$ sudo chmod o+t 58008/
+student@alexander-VirtualBox:~$ stat 58008/
+  Файл: 58008/
+  Размер: 4096	Блоков: 8          Блок В/В: 4096   каталог
+Устройство: 803h/2051d	Инода: 938801      Ссылки: 2
+Доступ: (1777/drwxrwxrwt)  Uid: ( 1001/ student)   Gid: ( 1001/ student)
+ 
+
+Права доступа к объектам внутри 58008:
+tmp6@alexander-VirtualBox:/home/student/58008$ ls -l
+итого 8
+drwxrwxrwx 2 student student 4096 ноя  6 12:37 F
+-rw-rw-rw- 1 student student    0 ноя  6 12:36 f1
+drwxrwxr-x 2 tmp6    tmp6    4096 ноя  6 12:39 F1
+-rw-rw-rw- 1 student student    0 ноя  6 12:36 f2
+-rw-rw-r-- 1 tmp6    tmp6       0 ноя  6 12:39 f3
+-rw-rw-r-- 1 tmp6    tmp6       0 ноя  6 12:39 f4
+
+Попытка удалить файл владельца student от пользователя tmp6:
+mp6@alexander-VirtualBox:/home/student/58008$ rm f1
+rm: невозможно удалить 'f1': Операция не позволена
+
+При этом файл пользователь tmp6 может редактировать и даже перезаписать полностью
+
+От имени владельца папки с установленным Sticky bit можно удалять объекты без дополнительных ограничений:
 
 
+student@alexander-VirtualBox:~/58008/F$ ls -l
+итого 0
+-rw-rw-r-- 1 tmp6    tmp6    0 ноя  6 12:43 f1
+-rw-rw-r-- 1 tmp6    tmp6    0 ноя  6 12:43 f2
+-rw-rw-rw- 1 student student 0 ноя  6 12:43 f3
+-rw-rw-rw- 1 student student 0 ноя  6 12:43 f4
+
+student@alexander-VirtualBox:~/58008/F$ rm f1
+rm: удалить защищённый от записи пустой обычный файл 'f1'? y
+student@alexander-VirtualBox:~/58008/F$ ls 
+f2  f3  f4
 
 
-
+tudent@alexander-VirtualBox:~/58008$ rm f4
+rm: удалить защищённый от записи пустой обычный файл 'f4'? y
+student@alexander-VirtualBox:~/58008$ ls -l
+итого 12
+drwxrwxrwx 2 student student 4096 ноя  6 12:44 F
+-rw-rw-rw- 1 student student   36 ноя  6 12:40 f1
+drwxrwxr-x 2 tmp6    tmp6    4096 ноя  6 12:39 F1
 
