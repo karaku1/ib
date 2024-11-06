@@ -1,0 +1,59 @@
+Лабораторная работа №2
+Списки контроля доступа к файлам и папкам (ACL)
+1. ACL прав доступа - определяет права доступа к файлу или папке для пользователей
+2. Acl по умолчанию - назначается только папкам, вновь создаваемые объекты внутри такой папки наследует ACL от родительской папки
+
+getfacl - позволяет просматривать списки контроля доступа
+setfacl - позволяет устанавливать и редактировать списки контроля доступа 
+ 
+Примеры изменения прав доступа при помощи setfacl 
+
+До изменения acl:
+student@alexander-VirtualBox:~$ setfacl -m u:tmp6:rwx 58008/
+student@alexander-VirtualBox:~$ getfacl 58008/
+# file: 58008/
+# owner: student
+# group: student
+# flags: --t
+user::rwx
+user:tmp6:rwx
+group::rwx
+mask::rwx
+other::rwx
+
+Изменение Acl:
+student@alexander-VirtualBox:~$ setfacl -m u:tmp7:rwx 58008/
+student@alexander-VirtualBox:~$ getfacl 58008/
+# file: 58008/
+# owner: student
+# group: student
+# flags: --t
+user::rwx
+user:tmp6:rwx
+user:tmp7:rwx
+group::rwx
+mask::rwx
+other::rwx
+
+
+
+Добавляем права доступа для групп:
+student@alexander-VirtualBox:~$ setfacl -m g:temgrp:rwx 58008/
+student@alexander-VirtualBox:~$ sudo groupadd tempgrp2
+student@alexander-VirtualBox:~$ setfacl -m g:tempgrp2:rwx 58008/
+
+При помощи chmod меняем права доступа:
+
+student@alexander-VirtualBox:~$ sudo chmod ugo-w 58008/
+ getfacl 58008/
+# file: 58008/
+# owner: student
+# group: student
+# flags: --tuser::r-x
+user:tmp6:rwx			#effective:r-x
+user:tmp7:r-x
+group::rwx			#effective:r-x
+group:temgrp:rwx		#effective:r-x
+group:tempgrp2:rwx		#effective:r-x
+mask::r-x
+other::r-x
